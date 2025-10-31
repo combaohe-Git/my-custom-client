@@ -11,7 +11,7 @@ subprojects {
                 plugins.hasPlugin("com.android.application")) {
             android {
                 compileSdkVersion 36
-                buildToolsVersion "36.0.0"
+                buildToolsVersion "36.1.0"
                 ndkVersion "27.3.13750724"
 
                 lint {
