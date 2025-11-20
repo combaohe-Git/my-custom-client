@@ -1187,7 +1187,6 @@ public class ChatActivity extends BaseFragment implements
     public final static int OPTION_COPY_PHOTO = 86;
     public final static int OPTION_SAVE_TO_GALLERY_STICKER = 87;
     public final static int OPTION_DETAILS = 89;
-    public final static int OPTION_VIEW_HISTORY = 90;
     public final static int OPTION_PRPR = 91;
     public final static int OPTION_CLEAR_FILE = 92;
     public final static int OPTION_SAVE_MESSAGE = 93;
@@ -33503,25 +33502,6 @@ public class ChatActivity extends BaseFragment implements
             } case OPTION_DETAILS: {
                 presentFragment(new MessageDetailsActivity(selectedObject));
                 break;
-            } case OPTION_VIEW_HISTORY: {
-                TLRPC.Peer peer = selectedObject.messageOwner.from_id;
-                if ((threadMessageId == 0 || isTopic) && !UserObject.isReplyUser(currentUser)) {
-                    openSearchWithText("");
-                } else {
-                    searchItem.openSearch(false);
-                }
-                if (peer.user_id != 0) {
-                    TLRPC.User user = getMessagesController().getUser(peer.user_id);
-                    searchUserMessages(user, null);
-                } else if (peer.chat_id != 0) {
-                    TLRPC.Chat chat = getMessagesController().getChat(peer.chat_id);
-                    searchUserMessages(null, chat);
-                } else if (peer.channel_id != 0) {
-                    TLRPC.Chat chat = getMessagesController().getChat(peer.channel_id);
-                    searchUserMessages(null, chat);
-                }
-                showMessagesSearchListView(true);
-                break;
             } case OPTION_PRPR: {
                 if (checkSlowMode(chatActivityEnterView.getSendButton())) {
                     return;
@@ -34805,6 +34785,9 @@ public class ChatActivity extends BaseFragment implements
             }
             if (searchUserButton != null) {
                 searchUserButton.setVisibility(View.GONE);
+            }
+            if (searchFilterButton != null) {
+                searchFilterButton.setVisibility(View.GONE);
             }
         }
         if (searchItem != null) {
@@ -44811,14 +44794,6 @@ public class ChatActivity extends BaseFragment implements
                         items.add(LocaleController.getString(R.string.Prpr));
                         options.add(OPTION_PRPR);
                         icons.add(R.drawable.msg_prpr);
-                    }
-                    if (NekoConfig.showViewHistory) {
-                        boolean allowViewHistory = currentChat != null && chatMode == 0 && !currentChat.broadcast && !(threadMessageObjects != null && threadMessageObjects.contains(message));
-                        if (allowViewHistory) {
-                            items.add(LocaleController.getString(R.string.ViewHistory));
-                            options.add(OPTION_VIEW_HISTORY);
-                            icons.add(R.drawable.msg_recent);
-                        }
                     }
                     if (NekoConfig.showQrCode && selectedObject.isPhoto()) {
                         items.add(LocaleController.getString(R.string.QrCode));

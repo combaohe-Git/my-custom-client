@@ -98,7 +98,6 @@ public class NekoConfig {
     public static boolean showSetReminder = false;
     public static boolean showReport = false;
     public static boolean showPrPr = false;
-    public static boolean showViewHistory = false;
     public static boolean showDeleteDownloadedFile = false;
     public static boolean showMessageDetails = false;
     public static boolean showTranslate = true;
@@ -182,7 +181,6 @@ public class NekoConfig {
             showSetReminder = preferences.getBoolean("showSetReminder", false);
             showReport = preferences.getBoolean("showReport", false);
             showPrPr = preferences.getBoolean("showPrPr", isChineseUser);
-            showViewHistory = preferences.getBoolean("showViewHistory", false);
             showDeleteDownloadedFile = preferences.getBoolean("showDeleteDownloadedFile", false);
             showMessageDetails = preferences.getBoolean("showMessageDetails", false);
             showTranslate = preferences.getBoolean("showTranslate", true);
@@ -568,15 +566,6 @@ public class NekoConfig {
         SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("nekoconfig", Activity.MODE_PRIVATE);
         SharedPreferences.Editor editor = preferences.edit();
         editor.putBoolean("showReport", showReport);
-        editor.apply();
-    }
-
-
-    public static void toggleShowViewHistory() {
-        showViewHistory = !showViewHistory;
-        SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("nekoconfig", Activity.MODE_PRIVATE);
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.putBoolean("showViewHistory", showViewHistory);
         editor.apply();
     }
 
