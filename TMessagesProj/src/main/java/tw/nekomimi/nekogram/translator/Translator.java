@@ -346,8 +346,6 @@ public class Translator {
         var countryUpperCase = country.toUpperCase();
         if (countryUpperCase.equals("DG")) {
             return "CN";
-        } else if (countryUpperCase.equals("HK")) {
-            return "TW";
         } else {
             return countryUpperCase;
         }
