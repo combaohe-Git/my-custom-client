@@ -123,6 +123,7 @@ public abstract class BaseNekoSettingsActivity extends BaseFragment {
         listView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                frameLayout.updateBlurContent();
                 frameLayout.invalidateBlur();
             }
         });
@@ -247,9 +248,6 @@ public abstract class BaseNekoSettingsActivity extends BaseFragment {
                     int restore = blurCanvas.save();
                     blurCanvas.translate(getX() + child.getX(), getY() + listView.getY() + child.getY());
                     child.draw(blurCanvas);
-                    if (views != null && child instanceof SizeNotifierFrameLayout.IViewWithInvalidateCallback) {
-                        views.add((SizeNotifierFrameLayout.IViewWithInvalidateCallback) child);
-                    }
                     blurCanvas.restoreToCount(restore);
                 }
             }
@@ -281,6 +279,11 @@ public abstract class BaseNekoSettingsActivity extends BaseFragment {
                 }
                 super.invalidateBlur();
             }
+        }
+
+        @Override
+        protected boolean invalidateOptimized() {
+            return true;
         }
     }
 
