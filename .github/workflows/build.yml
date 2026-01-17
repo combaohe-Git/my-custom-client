@@ -1,0 +1,35 @@
+name: 流程验证-不打包
+on: 
+  workflow_dispatch: 
+
+jobs:
+  test_env:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 1. 拉取源码（含子库）
+        uses: actions/checkout@v3
+        with:
+          submodules: recursive
+
+      - name: 2. 尝试从保险箱注入 API
+        run: |
+          FILE_PATH="TMessagesProj/src/main/java/tw/nekomimi/nekogram/Extra.java"
+          # 检查文件是否存在，防止路径错误
+          if [ ! -f "$FILE_PATH" ]; then
+            echo "错误：找不到 Extra.java 文件，请检查路径！"
+            exit 1
+          fi
+          # 注入 API
+          sed -i "s/API_ID = 0/API_ID = ${{ secrets.MY_API_ID }}/g" $FILE_PATH
+          sed -i "s/API_HASH = null/API_HASH = \"${{ secrets.MY_API_HASH }}\"/g" $FILE_PATH
+          echo "API 注入指令已执行。"
+
+      - name: 3. 验证注入结果
+        run: |
+          FILE_PATH="TMessagesProj/src/main/java/tw/nekomimi/nekogram/Extra.java"
+          if grep -q "API_ID = 0" "$FILE_PATH"; then
+            echo "错误：API_ID 注入失败，保险箱里可能没东西！"
+            exit 1
+          else
+            echo "恭喜：API 注入验证成功！你的保险箱设置正确。"
+          fi
