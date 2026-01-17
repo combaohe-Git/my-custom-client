@@ -1,0 +1,44 @@
+name: GitAI-主库全自动生产线
+on: 
+  workflow_dispatch: # 支持手动点火
+  push:
+    branches: [ "主要", "main", "master" ] # 只要你保存，AI 就自动跑
+
+jobs:
+  ai_production:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 1. AI 强制拉取主库及所有零件
+        uses: actions/checkout@v3
+        with:
+          submodules: recursive
+          fetch-depth: 0
+
+      - name: 2. AI 自动校准文件路径
+        run: |
+          # 无论你的零件在哪个文件夹，AI 都会把它找出来
+          TARGET=$(find . -name "Extra.java" | grep "nekogram" | head -n 1)
+          if [ -z "$TARGET" ]; then
+            echo "❌ 警告：主库中未发现核心图纸，请检查源码是否完整"
+            exit 1
+          fi
+          echo "REAL_PATH=$TARGET" >> $GITHUB_ENV
+          echo "✅ AI 定位成功：$TARGET"
+
+      - name: 3. AI 注入保险箱密钥
+        run: |
+          # 自动从你图 3 所示的 Secrets 中提取钥匙
+          sed -i "s/API_ID = 0/API_ID = ${{ secrets.MY_API_ID }}/g" ${{ env.REAL_PATH }}
+          sed -i "s/API_HASH = null/API_HASH = \"${{ secrets.MY_API_HASH }}\"/g" ${{ env.REAL_PATH }}
+          echo "✅ 密钥注入完成"
+
+      - name: 4. AI 开启云端打包 (需要约 20 分钟)
+        run: |
+          chmod +x gradlew
+          ./gradlew assembleRelease --no-daemon
+
+      - name: 5. AI 交付成品 APK
+        uses: actions/upload-artifact@v3
+        with:
+          name: My-Custom-Telegram
+          path: "**/build/outputs/apk/release/*.apk"
